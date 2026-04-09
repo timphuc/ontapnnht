@@ -31,7 +31,7 @@
     }
 
     .container {
-      max-width: 920px;
+      max-width: 980px;
       margin: 32px auto 60px;
       padding: 0 16px;
     }
@@ -81,12 +81,83 @@
       transition: width 0.3s ease;
     }
 
-    .question-card {
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .question-card, .menu-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 22px;
       box-shadow: var(--shadow);
+    }
+
+    .menu-card {
+      position: sticky;
+      top: 20px;
+    }
+
+    .menu-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 12px;
+      color: #1d4ed8;
+    }
+
+    .menu-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .qnav {
+      border: 1px solid var(--border);
+      background: #f8fbff;
+      border-radius: 10px;
+      padding: 10px 0;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .qnav:hover {
+      border-color: #9fb8ff;
+      background: #eef4ff;
+    }
+
+    .qnav.current {
+      background: #dbeafe;
+      border-color: #60a5fa;
+      color: #1d4ed8;
+    }
+
+    .qnav.correct {
+      background: var(--correct-soft);
+      border-color: #86efac;
+      color: var(--correct);
+    }
+
+    .qnav.wrong {
+      background: var(--wrong-soft);
+      border-color: #fca5a5;
+      color: var(--wrong);
+    }
+
+    .legend-mini {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
     }
 
     .badge {
@@ -107,17 +178,6 @@
       color: #0f172a;
     }
 
-    .grammar-box {
-      background: #eef2ff;
-      border: 1px solid #c7d2fe;
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 22px;
-      text-align: center;
-      margin-bottom: 18px;
-      font-weight: 700;
-    }
-
     .question-box {
       background: #eef2ff;
       border: 1px solid #c7d2fe;
@@ -126,6 +186,7 @@
       font-size: 19px;
       margin-bottom: 18px;
       font-weight: 700;
+      white-space: pre-line;
     }
 
     .options {
@@ -177,16 +238,12 @@
       font-weight: 700;
     }
 
-    .feedback.show {
-      display: block;
-    }
-
+    .feedback.show { display: block; }
     .feedback.correct {
       background: var(--correct-soft);
       color: var(--correct);
       border: 1px solid #86efac;
     }
-
     .feedback.wrong {
       background: var(--wrong-soft);
       color: var(--wrong);
@@ -220,7 +277,6 @@
       background: var(--primary);
       color: white;
     }
-
     .btn-secondary {
       background: #e5e7eb;
       color: #111827;
@@ -231,9 +287,7 @@
       transform: translateY(-1px);
     }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
     .result-card {
       display: none;
@@ -245,9 +299,7 @@
       text-align: center;
     }
 
-    .result-card.show {
-      display: block;
-    }
+    .result-card.show { display: block; }
 
     .result-card h2 {
       margin-top: 0;
@@ -289,12 +341,25 @@
       font-size: 14px;
     }
 
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .menu-card {
+        position: static;
+        order: -1;
+      }
+    }
+
     @media (max-width: 640px) {
       .hero h1 { font-size: 24px; }
-      .grammar-box, .question-box { font-size: 18px; }
+      .question-box { font-size: 18px; }
       .question-title { font-size: 18px; }
       button.nav { width: 100%; }
       .controls { flex-direction: column; }
+      .question-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
     }
   </style>
 </head>
@@ -313,19 +378,32 @@
       </div>
     </section>
 
-    <section class="question-card" id="questionCard">
-      <div class="badge" id="sectionBadge"></div>
-      <div class="question-title" id="questionTitle"></div>
-      <div class="question-box" id="contentBox"></div>
-      <div class="options" id="optionsBox"></div>
+    <div class="layout">
+      <section class="question-card" id="questionCard">
+        <div class="badge" id="sectionBadge"></div>
+        <div class="question-title" id="questionTitle"></div>
+        <div class="question-box" id="contentBox"></div>
+        <div class="options" id="optionsBox"></div>
 
-      <div class="feedback" id="feedbackBox"></div>
+        <div class="feedback" id="feedbackBox"></div>
 
-      <div class="controls">
-        <button class="nav btn-primary hidden" id="nextBtn">Câu tiếp theo</button>
-        <button class="nav btn-secondary" id="restartBtn">Làm lại</button>
-      </div>
-    </section>
+        <div class="controls">
+          <button class="nav btn-primary hidden" id="nextBtn">Câu tiếp theo</button>
+          <button class="nav btn-secondary" id="restartBtn">Làm lại</button>
+        </div>
+      </section>
+
+      <aside class="menu-card" id="menuCard">
+        <h3 class="menu-title">Menu câu hỏi</h3>
+        <div class="menu-note">Bấm số để nhảy nhanh đến câu cần làm.</div>
+        <div class="question-grid" id="questionGrid"></div>
+        <div class="legend-mini">
+          🔵 Đang làm<br>
+          🟢 Đã đúng<br>
+          🔴 Đã sai
+        </div>
+      </aside>
+    </div>
 
     <section class="result-card" id="resultCard">
       <h2>Hoàn thành bài quiz</h2>
@@ -341,472 +419,57 @@
 
   <script>
     const questions = [
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 1: Ngôn ngữ của biểu thức sau là gì?",
-        content: "(a+b)*ab",
-        options: [
-          "A. Tất cả các xâu trên {a,b} có chứa “ab” ở đâu đó",
-          "B. Tất cả các xâu trên {a,b} kết thúc bằng “ab”",
-          "C. Tất cả các xâu trên {a,b} bắt đầu bằng “ab”",
-          "D. Chỉ có xâu “ab”"
-        ],
-        answer: 1,
-        explain: "Vì (a+b)* sinh ra mọi tiền tố bất kỳ trên {a,b}, sau đó ghép thêm ab, nên mọi xâu đều phải kết thúc bằng ab."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 2: Biểu thức sau sinh ra ngôn ngữ nào?",
-        content: "a*b*",
-        options: [
-          "A. Các xâu có số lượng a bằng số lượng b",
-          "B. Các xâu gồm một số a rồi đến một số b",
-          "C. Các xâu xen kẽ a và b",
-          "D. Mọi xâu trên {a,b}"
-        ],
-        answer: 1,
-        explain: "a* cho một dãy a, rồi b* cho một dãy b. Không được quay lại a sau khi đã xuất hiện b."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 3: Xâu nào sau đây thuộc ngôn ngữ của biểu thức?",
-        content: "(ab + ba)*",
-        options: ["A. aabb", "B. abba", "C. ababaa", "D. baa"],
-        answer: 1,
-        explain: "abba = ab · ba, là ghép của hai khối hợp lệ ab và ba."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 4: Ngôn ngữ của biểu thức sau là:",
-        content: "(a+b)*",
-        options: [
-          "A. Mọi xâu chỉ gồm a và b, kể cả ε",
-          "B. Mọi xâu có ít nhất 1 ký tự a",
-          "C. Mọi xâu có độ dài chẵn",
-          "D. Mọi xâu bắt đầu bằng a"
-        ],
-        answer: 0,
-        explain: "(a+b)* là tất cả các xâu trên bộ chữ {a,b}, bao gồm cả xâu rỗng ε."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 5: Biểu thức nào biểu diễn tập các xâu trên {a,b} có đúng 1 ký tự b?",
-        content: "Chọn đáp án đúng",
-        options: ["A. a*ba*", "B. (a+b)*b(a+b)*", "C. ab*", "D. b*a*"],
-        answer: 0,
-        explain: "a*ba* cho phép có bao nhiêu a cũng được ở hai bên, nhưng chỉ có đúng một b ở giữa."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 6: Biểu thức sau KHÔNG sinh ra xâu nào?",
-        content: "(aa + b)*",
-        options: ["A. aab", "B. baa", "C. aaa", "D. aaaa"],
-        answer: 2,
-        explain: "Ta chỉ ghép được các khối aa hoặc b. Xâu aaa không tách thành các khối như vậy."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 7: Văn phạm sau sinh ra ngôn ngữ nào?",
-        content: "S → aS | b",
-        options: ["A. { aⁿb | n ≥ 0 }", "B. { baⁿ | n ≥ 0 }", "C. { aⁿbⁿ | n ≥ 0 }", "D. { a,b }"],
-        answer: 0,
-        explain: "Mỗi lần dùng S → aS thêm một a phía trước, và cuối cùng kết thúc bằng S → b."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 8: Văn phạm sau sinh ra:",
-        content: "S → aSb | ε",
-        options: ["A. { aⁿbⁿ | n ≥ 0 }", "B. { (ab)ⁿ | n ≥ 0 }", "C. { aⁿb | n ≥ 0 }", "D. { a+b }"],
-        answer: 0,
-        explain: "Mỗi bước thêm đồng thời một a ở trái và một b ở phải, nên số lượng a và b luôn bằng nhau."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 9: Xâu nào sau đây thuộc ngôn ngữ sinh bởi văn phạm?",
-        content: "S → aS | Sb | ε",
-        options: ["A. baab", "B. abba", "C. aaabbb", "D. Cả A, B, C"],
-        answer: 2,
-        explain: "Văn phạm này sinh ra dạng a^i b^j. Trong các lựa chọn, chỉ aaabbb đúng dạng: toàn a trước, toàn b sau."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 10: Biểu thức nào tương đương với biểu thức sau?",
-        content: "(ab)*a",
-        options: ["A. a(ba)*", "B. (ba)*a", "C. a(ab)*", "D. b(ab)*"],
-        answer: 0,
-        explain: "(ab)*a cho các xâu: a, aba, ababa, ... Đây cũng chính là dạng a(ba)*."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 11: Ngôn ngữ của biểu thức sau là:",
-        content: "(a+b)(a+b)",
-        options: ["A. Tất cả xâu độ dài 1", "B. Tất cả xâu độ dài 2 trên {a,b}", "C. Tất cả xâu độ dài chẵn", "D. Chỉ có aa và bb"],
-        answer: 1,
-        explain: "Mỗi ngoặc chọn một ký tự trong {a,b}, nên kết quả là mọi xâu dài đúng 2 ký tự."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 12: Biểu thức sau mô tả ngôn ngữ nào?",
-        content: "a*(ba*)*",
-        options: ["A. Tất cả các xâu trên {a,b}", "B. Các xâu không chứa “bb”", "C. Các xâu không chứa “aa”", "D. Các xâu bắt đầu bằng b"],
-        answer: 1,
-        explain: "Mỗi ký tự b nếu xuất hiện thì sau nó chỉ có thể là một dãy a*, nên không thể có hai b liên tiếp."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 13: Cho văn phạm sau, ngôn ngữ sinh ra là:",
-        content: "S → aA | bB, A → aS | a, B → bS | b",
-        options: ["A. Các xâu có độ dài chẵn", "B. Các xâu trên {a,b} kết thúc bằng ký tự đầu tiên", "C. Các xâu chỉ gồm a", "D. Các xâu có số a bằng số b"],
-        answer: 1,
-        explain: "Nếu bắt đầu bằng a thì sẽ chỉ quay qua nhánh a và kết thúc bằng a; nếu bắt đầu bằng b thì tương tự. Vì vậy xâu kết thúc bằng ký tự đầu tiên."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 14: Xâu nào không thuộc ngôn ngữ của biểu thức?",
-        content: "a*(ba*)*",
-        options: ["A. aaabaa", "B. b", "C. babaa", "D. bb"],
-        answer: 3,
-        explain: "Ngôn ngữ này không cho phép xuất hiện hai ký tự b liền nhau, nên bb không hợp lệ."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 15: Biểu thức nào biểu diễn tập các xâu có độ dài lẻ trên bộ chữ {a}?",
-        content: "Chọn đáp án đúng",
-        options: ["A. (aa)*", "B. a(aa)*", "C. (a+aa)*", "D. a*"],
-        answer: 1,
-        explain: "a(aa)* là 1 ký tự a cộng thêm nhiều cặp aa, nên tổng độ dài luôn lẻ."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 16: Ngôn ngữ của biểu thức sau là:",
-        content: "(a+b)*aa(a+b)*",
-        options: ["A. Các xâu có đúng 2 ký tự a liên tiếp", "B. Các xâu có chứa “aa” như một xâu con", "C. Các xâu bắt đầu bằng “aa”", "D. Các xâu kết thúc bằng “aa”"],
-        answer: 1,
-        explain: "Có thể có tiền tố và hậu tố bất kỳ, miễn là ở giữa xuất hiện aa."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 17: Văn phạm sau sinh ra:",
-        content: "S → aS | a",
-        options: ["A. { aⁿ | n ≥ 0 }", "B. { aⁿ | n ≥ 1 }", "C. { a²ⁿ | n ≥ 0 }", "D. { ε, a }"],
-        answer: 1,
-        explain: "Mọi xâu sinh ra đều có ít nhất một a, vì không có luật tạo ra ε."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 18: Biểu thức (a+b)* - b* nếu hiểu theo ý nghĩa tập hợp sẽ là:",
-        content: "Chọn đáp án đúng",
-        options: ["A. Các xâu chỉ gồm a", "B. Các xâu trên {a,b} có ít nhất một ký tự a", "C. Các xâu trên {a,b} có ít nhất một ký tự b", "D. Các xâu độ dài lớn hơn 1"],
-        answer: 1,
-        explain: "(a+b)* là mọi xâu trên {a,b}; bỏ đi b* tức là bỏ những xâu chỉ toàn b hoặc rỗng, còn lại là các xâu có ít nhất một a."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 19: Với văn phạm sau, ngôn ngữ là:",
-        content: "S → AB, A → aA | ε, B → bB | ε",
-        options: ["A. { aⁿbⁿ | n ≥ 0 }", "B. { aⁿbᵐ | n,m ≥ 0 }", "C. { (ab)ⁿ | n ≥ 0 }", "D. { a+b }"],
-        answer: 1,
-        explain: "A sinh ra một dãy a bất kỳ, B sinh ra một dãy b bất kỳ, nên toàn bộ là aⁿbᵐ."
-      },
-      {
-        section: "Phần 1: Biểu thức chính quy & ngôn ngữ",
-        type: "regular",
-        title: "Câu 20: Biểu thức nào tương đương với tập các xâu trên {a,b} có độ dài chẵn?",
-        content: "Chọn đáp án đúng",
-        options: ["A. ((a+b)(a+b))*", "B. (a+b)*", "C. (aa+bb)*", "D. (ab)* + (ba)*"],
-        answer: 0,
-        explain: "Mỗi khối (a+b)(a+b) đóng góp đúng 2 ký tự. Lặp lại nhiều lần sẽ cho mọi xâu có độ dài chẵn."
-      },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 1: Ngôn ngữ của biểu thức sau là gì?", content:"(a+b)*ab", options:["A. Tất cả các xâu trên {a,b} có chứa “ab” ở đâu đó","B. Tất cả các xâu trên {a,b} kết thúc bằng “ab”","C. Tất cả các xâu trên {a,b} bắt đầu bằng “ab”","D. Chỉ có xâu “ab”"], answer:1, explain:"Vì (a+b)* sinh ra mọi tiền tố bất kỳ trên {a,b}, sau đó ghép thêm ab, nên mọi xâu đều phải kết thúc bằng ab." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 2: Biểu thức sau sinh ra ngôn ngữ nào?", content:"a*b*", options:["A. Các xâu có số lượng a bằng số lượng b","B. Các xâu gồm một số a rồi đến một số b","C. Các xâu xen kẽ a và b","D. Mọi xâu trên {a,b}"], answer:1, explain:"a* cho một dãy a, rồi b* cho một dãy b. Không được quay lại a sau khi đã xuất hiện b." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 3: Xâu nào sau đây thuộc ngôn ngữ của biểu thức?", content:"(ab + ba)*", options:["A. aabb","B. abba","C. ababaa","D. baa"], answer:1, explain:"abba = ab · ba, là ghép của hai khối hợp lệ ab và ba." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 4: Ngôn ngữ của biểu thức sau là:", content:"(a+b)*", options:["A. Mọi xâu chỉ gồm a và b, kể cả ε","B. Mọi xâu có ít nhất 1 ký tự a","C. Mọi xâu có độ dài chẵn","D. Mọi xâu bắt đầu bằng a"], answer:0, explain:"(a+b)* là tất cả các xâu trên bộ chữ {a,b}, bao gồm cả xâu rỗng ε." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 5: Biểu thức nào biểu diễn tập các xâu trên {a,b} có đúng 1 ký tự b?", content:"Chọn đáp án đúng", options:["A. a*ba*","B. (a+b)*b(a+b)*","C. ab*","D. b*a*"], answer:0, explain:"a*ba* cho phép có bao nhiêu a cũng được ở hai bên, nhưng chỉ có đúng một b ở giữa." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 6: Biểu thức sau KHÔNG sinh ra xâu nào?", content:"(aa + b)*", options:["A. aab","B. baa","C. aaa","D. aaaa"], answer:2, explain:"Ta chỉ ghép được các khối aa hoặc b. Xâu aaa không tách thành các khối như vậy." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 7: Văn phạm sau sinh ra ngôn ngữ nào?", content:"S → aS | b", options:["A. { aⁿb | n ≥ 0 }","B. { baⁿ | n ≥ 0 }","C. { aⁿbⁿ | n ≥ 0 }","D. { a,b }"], answer:0, explain:"Mỗi lần dùng S → aS thêm một a phía trước, và cuối cùng kết thúc bằng S → b." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 8: Văn phạm sau sinh ra:", content:"S → aSb | ε", options:["A. { aⁿbⁿ | n ≥ 0 }","B. { (ab)ⁿ | n ≥ 0 }","C. { aⁿb | n ≥ 0 }","D. { a+b }"], answer:0, explain:"Mỗi bước thêm đồng thời một a ở trái và một b ở phải, nên số lượng a và b luôn bằng nhau." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 9: Xâu nào sau đây thuộc ngôn ngữ sinh bởi văn phạm?", content:"S → aS | Sb | ε", options:["A. baab","B. abba","C. aaabbb","D. Cả A, B, C"], answer:2, explain:"Văn phạm này sinh ra dạng a^i b^j. Trong các lựa chọn, chỉ aaabbb đúng dạng: toàn a trước, toàn b sau." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 10: Biểu thức nào tương đương với biểu thức sau?", content:"(ab)*a", options:["A. a(ba)*","B. (ba)*a","C. a(ab)*","D. b(ab)*"], answer:0, explain:"(ab)*a cho các xâu: a, aba, ababa, ... Đây cũng chính là dạng a(ba)*." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 11: Ngôn ngữ của biểu thức sau là:", content:"(a+b)(a+b)", options:["A. Tất cả xâu độ dài 1","B. Tất cả xâu độ dài 2 trên {a,b}","C. Tất cả xâu độ dài chẵn","D. Chỉ có aa và bb"], answer:1, explain:"Mỗi ngoặc chọn một ký tự trong {a,b}, nên kết quả là mọi xâu dài đúng 2 ký tự." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 12: Biểu thức sau mô tả ngôn ngữ nào?", content:"a*(ba*)*", options:["A. Tất cả các xâu trên {a,b}","B. Các xâu không chứa “bb”","C. Các xâu không chứa “aa”","D. Các xâu bắt đầu bằng b"], answer:1, explain:"Mỗi ký tự b nếu xuất hiện thì sau nó chỉ có thể là một dãy a*, nên không thể có hai b liên tiếp." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 13: Cho văn phạm sau, ngôn ngữ sinh ra là:", content:"S → aA | bB, A → aS | a, B → bS | b", options:["A. Các xâu có độ dài chẵn","B. Các xâu trên {a,b} kết thúc bằng ký tự đầu tiên","C. Các xâu chỉ gồm a","D. Các xâu có số a bằng số b"], answer:1, explain:"Nếu bắt đầu bằng a thì sẽ chỉ quay qua nhánh a và kết thúc bằng a; nếu bắt đầu bằng b thì tương tự. Vì vậy xâu kết thúc bằng ký tự đầu tiên." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 14: Xâu nào không thuộc ngôn ngữ của biểu thức?", content:"a*(ba*)*", options:["A. aaabaa","B. b","C. babaa","D. bb"], answer:3, explain:"Ngôn ngữ này không cho phép xuất hiện hai ký tự b liền nhau, nên bb không hợp lệ." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 15: Biểu thức nào biểu diễn tập các xâu có độ dài lẻ trên bộ chữ {a}?", content:"Chọn đáp án đúng", options:["A. (aa)*","B. a(aa)*","C. (a+aa)*","D. a*"], answer:1, explain:"a(aa)* là 1 ký tự a cộng thêm nhiều cặp aa, nên tổng độ dài luôn lẻ." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 16: Ngôn ngữ của biểu thức sau là:", content:"(a+b)*aa(a+b)*", options:["A. Các xâu có đúng 2 ký tự a liên tiếp","B. Các xâu có chứa “aa” như một xâu con","C. Các xâu bắt đầu bằng “aa”","D. Các xâu kết thúc bằng “aa”"], answer:1, explain:"Có thể có tiền tố và hậu tố bất kỳ, miễn là ở giữa xuất hiện aa." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 17: Văn phạm sau sinh ra:", content:"S → aS | a", options:["A. { aⁿ | n ≥ 0 }","B. { aⁿ | n ≥ 1 }","C. { a²ⁿ | n ≥ 0 }","D. { ε, a }"], answer:1, explain:"Mọi xâu sinh ra đều có ít nhất một a, vì không có luật tạo ra ε." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 18: Biểu thức (a+b)* - b* nếu hiểu theo ý nghĩa tập hợp sẽ là:", content:"Chọn đáp án đúng", options:["A. Các xâu chỉ gồm a","B. Các xâu trên {a,b} có ít nhất một ký tự a","C. Các xâu trên {a,b} có ít nhất một ký tự b","D. Các xâu độ dài lớn hơn 1"], answer:1, explain:"(a+b)* là mọi xâu trên {a,b}; bỏ đi b* tức là bỏ những xâu chỉ toàn b hoặc rỗng, còn lại là các xâu có ít nhất một a." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 19: Với văn phạm sau, ngôn ngữ là:", content:"S → AB, A → aA | ε, B → bB | ε", options:["A. { aⁿbⁿ | n ≥ 0 }","B. { aⁿbᵐ | n,m ≥ 0 }","C. { (ab)ⁿ | n ≥ 0 }","D. { a+b }"], answer:1, explain:"A sinh ra một dãy a bất kỳ, B sinh ra một dãy b bất kỳ, nên toàn bộ là aⁿbᵐ." },
+      { section:"Phần 1: Biểu thức chính quy & ngôn ngữ", type:"regular", title:"Câu 20: Biểu thức nào tương đương với tập các xâu trên {a,b} có độ dài chẵn?", content:"Chọn đáp án đúng", options:["A. ((a+b)(a+b))*","B. (a+b)*","C. (aa+bb)*","D. (ab)* + (ba)*"], answer:0, explain:"Mỗi khối (a+b)(a+b) đóng góp đúng 2 ký tự. Lặp lại nhiều lần sẽ cho mọi xâu có độ dài chẵn." },
 
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 21: Văn phạm sau thuộc loại nào?",
-        content: "S → aS | bS | ε",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Các luật đều có dạng tuyến tính phải hoặc ε, nên đây là văn phạm chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 22: Văn phạm sau thuộc loại nào?",
-        content: "S → aSb | ε",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái chỉ có một ký hiệu không kết thúc S, nên là phi ngữ cảnh. Không phải chính quy vì có dạng aSb."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 23: Văn phạm sau thuộc loại nào?",
-        content: "AB → BA",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có 2 ký hiệu AB nên không phải phi ngữ cảnh hay chính quy. Đây là cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 24: Văn phạm sau thuộc loại nào?",
-        content: "S → aA, A → b",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Các luật đều phù hợp dạng A → aB hoặc A → a, nên là chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 25: Văn phạm sau thuộc loại nào?",
-        content: "S → aSb | ab",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái chỉ có S nên là phi ngữ cảnh; không phải chính quy vì có aSb."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 26: Văn phạm sau thuộc loại nào?",
-        content: "aA → aa",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có ngữ cảnh aA nên đây là văn phạm cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 27: Văn phạm sau thuộc loại nào?",
-        content: "S → AB, A → a, B → b",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái mỗi luật chỉ có 1 ký hiệu không kết thúc nên là phi ngữ cảnh. Không phải chính quy vì có S → AB."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 28: Văn phạm sau thuộc loại nào?",
-        content: "S → aS | Sb | ε",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái chỉ có S nên là phi ngữ cảnh. Dạng Sb khiến nó không còn là chính quy theo dạng chuẩn cơ bản."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 29: Văn phạm sau thuộc loại nào?",
-        content: "A → aA | a",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Đây là dạng chính quy quen thuộc: A → aA | a."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 30: Văn phạm sau thuộc loại nào?",
-        content: "aAb → abb",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Có ngữ cảnh hai bên của A là a và b, nên thuộc cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 31: Văn phạm sau thuộc loại nào?",
-        content: "S → aSbS | ε",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái chỉ có S, nên là phi ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 32: Văn phạm sau thuộc loại nào?",
-        content: "S → aA, A → bB, B → c",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Tất cả đều ở dạng chính quy: A → aB hoặc A → a."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 33: Văn phạm sau thuộc loại nào?",
-        content: "AB → ABB",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có 2 ký hiệu nên không phải phi ngữ cảnh. Đây là cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 34: Văn phạm sau thuộc loại nào?",
-        content: "S → aS | b",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Dạng A → aB hoặc A → a nên là văn phạm chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 35: Văn phạm sau thuộc loại nào?",
-        content: "S → aSb | bSa | ε",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Mỗi luật đều có đúng 1 ký hiệu không kết thúc ở vế trái, nên là phi ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 36: Văn phạm sau thuộc loại nào?",
-        content: "A → BC",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái là 1 ký hiệu không kết thúc nên là phi ngữ cảnh; không phải chính quy vì vế phải toàn biến BC."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 37: Văn phạm sau thuộc loại nào?",
-        content: "aB → Ba",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có thêm ký hiệu ngữ cảnh a nên là cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 38: Văn phạm sau thuộc loại nào?",
-        content: "S → aA, A → aA | b",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Các luật đều theo dạng chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 39: Văn phạm sau thuộc loại nào?",
-        content: "S → SS | a",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái chỉ có S nên là phi ngữ cảnh; không phải chính quy vì có S → SS."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 40: Văn phạm sau thuộc loại nào?",
-        content: "AB → CD",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có 2 ký hiệu nên thuộc cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 41: Văn phạm sau thuộc loại nào?",
-        content: "S → aSb | ab | a",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái chỉ có S nên là phi ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 42: Văn phạm sau thuộc loại nào?",
-        content: "aSb → aaSbb",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Đây là luật phụ thuộc ngữ cảnh vì S nằm trong ngữ cảnh a...b."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 43: Văn phạm sau thuộc loại nào?",
-        content: "S → aS | bS | c",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Dạng tuyến tính phải nên là văn phạm chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 44: Văn phạm sau thuộc loại nào?",
-        content: "S → aA | bB, A → a, B → b",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Tất cả đều theo dạng chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 45: Văn phạm sau thuộc loại nào?",
-        content: "AB → AAB",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có nhiều ký hiệu nên xếp vào cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 46: Văn phạm sau thuộc loại nào?",
-        content: "S → aSb | S | ε",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 1,
-        explain: "Vế trái luôn chỉ có S nên là phi ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 47: Văn phạm sau thuộc loại nào?",
-        content: "A → aA | bA | c",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Đây là dạng chuẩn của văn phạm chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 48: Văn phạm sau thuộc loại nào?",
-        content: "aA → aAA",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Có ngữ cảnh ở vế trái nên là cảm ngữ cảnh."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 49: Văn phạm sau thuộc loại nào?",
-        content: "S → a | b | ab",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 0,
-        explain: "Dạng này vẫn thuộc chính quy vì nó sinh ra một ngôn ngữ hữu hạn chính quy."
-      },
-      {
-        section: "Phần 2: Phân biệt các loại văn phạm",
-        type: "grammar",
-        title: "Câu 50: Văn phạm sau thuộc loại nào?",
-        content: "ABC → ADBC",
-        options: ["A. Văn phạm chính quy", "B. Văn phạm phi ngữ cảnh", "C. Văn phạm cảm ngữ cảnh"],
-        answer: 2,
-        explain: "Vế trái có nhiều ký hiệu nên đây là cảm ngữ cảnh."
-      }
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 21: Văn phạm sau thuộc loại nào?", content:"S → aS | bS | ε", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Các luật đều có dạng tuyến tính phải hoặc ε, nên đây là văn phạm chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 22: Văn phạm sau thuộc loại nào?", content:"S → aSb | ε", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái chỉ có một ký hiệu không kết thúc S, nên là phi ngữ cảnh. Không phải chính quy vì có dạng aSb." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 23: Văn phạm sau thuộc loại nào?", content:"AB → BA", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có 2 ký hiệu AB nên không phải phi ngữ cảnh hay chính quy. Đây là cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 24: Văn phạm sau thuộc loại nào?", content:"S → aA, A → b", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Các luật đều phù hợp dạng A → aB hoặc A → a, nên là chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 25: Văn phạm sau thuộc loại nào?", content:"S → aSb | ab", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái chỉ có S nên là phi ngữ cảnh; không phải chính quy vì có aSb." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 26: Văn phạm sau thuộc loại nào?", content:"aA → aa", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có ngữ cảnh aA nên đây là văn phạm cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 27: Văn phạm sau thuộc loại nào?", content:"S → AB, A → a, B → b", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái mỗi luật chỉ có 1 ký hiệu không kết thúc nên là phi ngữ cảnh. Không phải chính quy vì có S → AB." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 28: Văn phạm sau thuộc loại nào?", content:"S → aS | Sb | ε", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái chỉ có S nên là phi ngữ cảnh. Dạng Sb khiến nó không còn là chính quy theo dạng chuẩn cơ bản." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 29: Văn phạm sau thuộc loại nào?", content:"A → aA | a", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Đây là dạng chính quy quen thuộc: A → aA | a." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 30: Văn phạm sau thuộc loại nào?", content:"aAb → abb", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Có ngữ cảnh hai bên của A là a và b, nên thuộc cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 31: Văn phạm sau thuộc loại nào?", content:"S → aSbS | ε", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái chỉ có S, nên là phi ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 32: Văn phạm sau thuộc loại nào?", content:"S → aA, A → bB, B → c", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Tất cả đều ở dạng chính quy: A → aB hoặc A → a." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 33: Văn phạm sau thuộc loại nào?", content:"AB → ABB", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có 2 ký hiệu nên không phải phi ngữ cảnh. Đây là cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 34: Văn phạm sau thuộc loại nào?", content:"S → aS | b", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Dạng A → aB hoặc A → a nên là văn phạm chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 35: Văn phạm sau thuộc loại nào?", content:"S → aSb | bSa | ε", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Mỗi luật đều có đúng 1 ký hiệu không kết thúc ở vế trái, nên là phi ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 36: Văn phạm sau thuộc loại nào?", content:"A → BC", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái là 1 ký hiệu không kết thúc nên là phi ngữ cảnh; không phải chính quy vì vế phải toàn biến BC." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 37: Văn phạm sau thuộc loại nào?", content:"aB → Ba", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có thêm ký hiệu ngữ cảnh a nên là cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 38: Văn phạm sau thuộc loại nào?", content:"S → aA, A → aA | b", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Các luật đều theo dạng chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 39: Văn phạm sau thuộc loại nào?", content:"S → SS | a", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái chỉ có S nên là phi ngữ cảnh; không phải chính quy vì có S → SS." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 40: Văn phạm sau thuộc loại nào?", content:"AB → CD", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có 2 ký hiệu nên thuộc cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 41: Văn phạm sau thuộc loại nào?", content:"S → aSb | ab | a", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái chỉ có S nên là phi ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 42: Văn phạm sau thuộc loại nào?", content:"aSb → aaSbb", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Đây là luật phụ thuộc ngữ cảnh vì S nằm trong ngữ cảnh a...b." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 43: Văn phạm sau thuộc loại nào?", content:"S → aS | bS | c", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Dạng tuyến tính phải nên là văn phạm chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 44: Văn phạm sau thuộc loại nào?", content:"S → aA | bB, A → a, B → b", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Tất cả đều theo dạng chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 45: Văn phạm sau thuộc loại nào?", content:"AB → AAB", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có nhiều ký hiệu nên xếp vào cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 46: Văn phạm sau thuộc loại nào?", content:"S → aSb | S | ε", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:1, explain:"Vế trái luôn chỉ có S nên là phi ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 47: Văn phạm sau thuộc loại nào?", content:"A → aA | bA | c", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Đây là dạng chuẩn của văn phạm chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 48: Văn phạm sau thuộc loại nào?", content:"aA → aAA", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Có ngữ cảnh ở vế trái nên là cảm ngữ cảnh." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 49: Văn phạm sau thuộc loại nào?", content:"S → a | b | ab", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:0, explain:"Dạng này vẫn thuộc chính quy vì nó sinh ra một ngôn ngữ hữu hạn chính quy." },
+      { section:"Phần 2: Phân biệt các loại văn phạm", type:"grammar", title:"Câu 50: Văn phạm sau thuộc loại nào?", content:"ABC → ADBC", options:["A. Văn phạm chính quy","B. Văn phạm phi ngữ cảnh","C. Văn phạm cảm ngữ cảnh"], answer:2, explain:"Vế trái có nhiều ký hiệu nên đây là cảm ngữ cảnh." }
     ];
 
     let currentQuestion = 0;
@@ -814,6 +477,7 @@
     let regularScore = 0;
     let grammarScore = 0;
     let answered = false;
+    const questionStates = Array(questions.length).fill(null); // null, true, false
 
     const progressText = document.getElementById("progressText");
     const progressFill = document.getElementById("progressFill");
@@ -830,6 +494,31 @@
     const finalNote = document.getElementById("finalNote");
     const subscores = document.getElementById("subscores");
     const playAgainBtn = document.getElementById("playAgainBtn");
+    const questionGrid = document.getElementById("questionGrid");
+    const menuCard = document.getElementById("menuCard");
+
+    function renderMenu() {
+      questionGrid.innerHTML = "";
+      questions.forEach((_, index) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav";
+        btn.type = "button";
+        btn.textContent = index + 1;
+
+        if (index === currentQuestion) btn.classList.add("current");
+        if (questionStates[index] === true) btn.classList.add("correct");
+        if (questionStates[index] === false) btn.classList.add("wrong");
+
+        btn.onclick = () => goToQuestion(index);
+        questionGrid.appendChild(btn);
+      });
+    }
+
+    function goToQuestion(index) {
+      currentQuestion = index;
+      renderQuestion();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     function renderQuestion() {
       answered = false;
@@ -853,10 +542,12 @@
         btn.onclick = () => selectAnswer(index, btn);
         optionsBox.appendChild(btn);
       });
+
+      renderMenu();
     }
 
     function selectAnswer(selectedIndex, selectedBtn) {
-      if (answered) return;
+      if (answered || questionStates[currentQuestion] !== null) return;
       answered = true;
 
       const q = questions[currentQuestion];
@@ -864,56 +555,48 @@
 
       allOptions.forEach((btn, index) => {
         btn.classList.add("disabled");
-        if (index === q.answer) {
-          btn.classList.add("correct");
-        }
+        if (index === q.answer) btn.classList.add("correct");
       });
 
       if (selectedIndex === q.answer) {
         score++;
         if (q.type === "regular") regularScore++;
         if (q.type === "grammar") grammarScore++;
+        questionStates[currentQuestion] = true;
 
         feedbackBox.className = "feedback show correct";
-        feedbackBox.innerHTML = `
-          ✅ Chính xác!
-          <div class="explain">${q.explain}</div>
-        `;
+        feedbackBox.innerHTML = `✅ Chính xác!<div class="explain">${q.explain}</div>`;
       } else {
         selectedBtn.classList.add("wrong");
+        questionStates[currentQuestion] = false;
+
         feedbackBox.className = "feedback show wrong";
-        feedbackBox.innerHTML = `
-          ❌ Sai rồi.
-          <div class="explain">Đáp án đúng là: <b>${q.options[q.answer]}</b>.<br>${q.explain}</div>
-        `;
+        feedbackBox.innerHTML = `❌ Sai rồi.<div class="explain">Đáp án đúng là: <b>${q.options[q.answer]}</b>.<br>${q.explain}</div>`;
       }
+
+      renderMenu();
 
       if (currentQuestion < questions.length - 1) {
         nextBtn.textContent = "Câu tiếp theo";
-        nextBtn.classList.remove("hidden");
       } else {
         nextBtn.textContent = "Xem kết quả";
-        nextBtn.classList.remove("hidden");
       }
+      nextBtn.classList.remove("hidden");
     }
 
     function showResult() {
       questionCard.classList.add("hidden");
+      menuCard.classList.add("hidden");
       resultCard.classList.add("show");
 
       const percent = Math.round((score / questions.length) * 100);
       finalScore.textContent = `${score} / ${questions.length} câu (${percent}%)`;
 
       let rank = "";
-      if (percent === 100) {
-        rank = "Quá mạnh luôn, gần như full điểm.";
-      } else if (percent >= 80) {
-        rank = "Rất tốt, bạn nắm bài khá chắc.";
-      } else if (percent >= 60) {
-        rank = "Ổn rồi, nhưng nên luyện thêm vài câu bẫy.";
-      } else {
-        rank = "Bạn nên ôn lại phần biểu thức chính quy và cách nhận diện văn phạm.";
-      }
+      if (percent === 100) rank = "Quá mạnh luôn, gần như full điểm.";
+      else if (percent >= 80) rank = "Rất tốt, bạn nắm bài khá chắc.";
+      else if (percent >= 60) rank = "Ổn rồi, nhưng nên luyện thêm vài câu bẫy.";
+      else rank = "Bạn nên ôn lại phần biểu thức chính quy và cách nhận diện văn phạm.";
 
       finalNote.textContent = rank;
       subscores.innerHTML = `
@@ -942,8 +625,11 @@
       regularScore = 0;
       grammarScore = 0;
       answered = false;
+      for (let i = 0; i < questionStates.length; i++) questionStates[i] = null;
+
       resultCard.classList.remove("show");
       questionCard.classList.remove("hidden");
+      menuCard.classList.remove("hidden");
       renderQuestion();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
